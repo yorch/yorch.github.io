@@ -11,7 +11,9 @@ async function fetchAll() {
     const res = await fetch(url, {
       headers: {
         Accept: 'application/vnd.github+json',
-        ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+        ...(process.env.GITHUB_TOKEN
+          ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+          : {}),
       },
     });
     if (!res.ok) throw new Error(`GitHub API ${res.status} ${await res.text()}`);
