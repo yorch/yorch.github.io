@@ -218,7 +218,7 @@
   },
   {
     "name": "react-graphql-example",
-    "description": null,
+    "description": "React + Vite + Apollo Client example — GraphQL Codegen, Tailwind, Vitest & faker",
     "stars": 1,
     "forks": 0,
     "language": "TypeScript",
