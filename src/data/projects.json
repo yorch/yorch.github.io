@@ -295,14 +295,14 @@
   },
   {
     "name": "pi-harness-delegate",
-    "description": null,
+    "description": "Delegate work to any harness (Claude Code, Muse, OpenCode, Amp) from pi — reviews, plans, implementation, audits, docs",
     "stars": 0,
     "forks": 0,
     "language": "TypeScript",
     "topics": [],
     "updated": "2026-08-25T01:29:21Z",
     "url": "https://github.com/yorch/pi-harness-delegate",
-    "homepage": null
+    "homepage": "https://yorch.github.io/pi-harness-delegate/"
   },
   {
     "name": "pi-statusbar",
