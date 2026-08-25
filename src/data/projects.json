@@ -409,7 +409,7 @@
   },
   {
     "name": "availability-checker",
-    "description": null,
+    "description": "Generic product stock monitor — checks availability via products.json, notifies via Email/SMTP, Twilio SMS & Pushbullet. Docker-ready",
     "stars": 0,
     "forks": 0,
     "language": "JavaScript",
