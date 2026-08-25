@@ -1,0 +1,93 @@
+---
+interface Props {
+  name: string;
+  description: string | null;
+  stars: number;
+  forks: number;
+  language: string | null;
+  topics: string[];
+  updated: string;
+  url: string;
+  homepage: string | null;
+}
+const { name, description, stars, forks, language, topics, updated, url, homepage } = Astro.props;
+
+const langColors: Record<string, string> = {
+  Astro: "#ff5a03",
+  Go: "#00ADD8",
+  Java: "#b07219",
+  JavaScript: "#f1e05a",
+  Python: "#3572A5",
+  Ruby: "#701516",
+  Shell: "#89e051",
+  TypeScript: "#3178c6",
+};
+const color = language ? (langColors[language] ?? "#52525b") : null;
+const updatedLabel = new Date(updated).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+const isSafeHttp = (u: string) => {
+  try {
+    const p = new URL(u).protocol;
+    return p === "http:" || p === "https:";
+  } catch {
+    return false;
+  }
+};
+const hasHomepage = Boolean(homepage && homepage.trim() !== "" && isSafeHttp(homepage));
+const homepageLabel = hasHomepage ? new URL(homepage as string).hostname.replace(/^www\./, "") : "";
+---
+
+<div
+  class="group flex h-full flex-col rounded-xl border border-emerald-900/30 bg-zinc-900 p-6 hover:border-emerald-800 hover:bg-zinc-900/80 transition-colors duration-150"
+>
+  <div class="flex items-start justify-between gap-3">
+    <a href={url} target="_blank" rel="noopener noreferrer" class="min-w-0 hover:underline decoration-emerald-800 underline-offset-4">
+      <h3 class="font-mono text-[16px] font-medium leading-tight text-zinc-100 group-hover:text-emerald-400">{name}</h3>
+    </a>
+    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-medium text-black">
+      <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.192L.818 6.365a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" /></svg>
+      {stars}
+    </span>
+  </div>
+
+  <p class="mt-3 font-mono text-[13px] leading-5 text-zinc-300">
+    {description ?? "No description provided."}
+  </p>
+
+  {
+    topics.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-1.5">
+        {topics.map((t) => (
+          <span class="rounded-full bg-black px-2 py-0.5 font-mono text-[11px] text-zinc-400 border border-zinc-800">{t}</span>
+        ))}
+      </div>
+    )
+  }
+
+  <div class="mt-4 flex items-center gap-2 font-mono text-xs text-zinc-500">
+    {language && (
+      <>
+        <span class="inline-block h-2.5 w-2.5 rounded-full" style={`background:${color}`} />
+        <span>{language}</span>
+        <span class="opacity-30">·</span>
+      </>
+    )}
+    <span>Updated {updatedLabel}</span>
+    <span class="opacity-30">·</span>
+    <span>{forks} forks</span>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-2">
+    <a href={url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-zinc-100 transition-colors duration-150">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" /></svg>
+      GitHub
+    </a>
+    {
+      hasHomepage && (
+        <a href={homepage as string} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 rounded-full border border-emerald-800 bg-emerald-950/30 px-3 py-1.5 font-mono text-xs font-medium text-emerald-300 hover:bg-emerald-900/30 hover:text-emerald-200 transition-colors duration-150">
+          <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13z" /><path d="M1.5 8h13M8 1.5c1.2 2 1.2 11 0 13M8 1.5c-1.2 2-1.2 11 0 13" /></svg>
+          {homepageLabel}
+        </a>
+      )
+    }
+  </div>
+</div>

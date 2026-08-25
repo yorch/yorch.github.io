@@ -1,8 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
+import HighlightedCard from "../components/HighlightedCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import projectsRaw from "../data/projects.json";
 import curation from "../data/curation.json";
+import projectsRaw from "../data/projects.json";
 
 const hiddenSet = new Set((curation.hidden ?? []) as string[]);
 const visibleRaw = Array.isArray((curation as any).visible) && (curation as any).visible.length > 0
@@ -16,7 +17,11 @@ const visible = visibleRaw.map((p) => {
 const featuredNames = (curation.featured ?? []) as string[];
 const featured = featuredNames.map((n) => visible.find((p) => p.name === n)).filter(Boolean) as typeof visible;
 const rest = visible.filter((p) => !new Set(featured.map((f) => f.name)).has(p.name)).sort((a, b) => b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime());
-const sorted = [...featured, ...rest];
+const sortedAll = [...featured, ...rest];
+const highlightedNames = ((curation as any).highlighted ?? []) as string[];
+const highlighted = highlightedNames.map((n) => visible.find((p) => p.name === n)).filter(Boolean) as typeof visible;
+const highlightedSet = new Set(highlighted.map((p) => p.name));
+const sorted = sortedAll.filter((p) => !highlightedSet.has(p.name));
 const languages = [...new Set(visible.map((p) => p.language).filter(Boolean))].sort() as string[];
 const totalStars = visible.reduce((s, p) => s + p.stars, 0);
 const totalAll = projectsRaw.length;
@@ -83,6 +88,22 @@ const hiddenCount = totalAll - visible.length;
       </div>
     </div>
   </section>
+
+  <!-- HIGHLIGHTED — elevated terminal -->
+  {highlighted.length > 0 && (
+    <section class="mx-auto max-w-[1120px] px-6">
+      <div class="mb-3 flex items-center gap-2 font-mono text-xs">
+        <span class="text-emerald-400">~/featured$</span>
+        <span class="text-zinc-500">cat highlighted.md — {highlighted.length} picks · curated via curation.json</span>
+        <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/curation.json" class="ml-auto hidden text-zinc-600 hover:text-zinc-300 md:inline">edit highlighted →</a>
+      </div>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {highlighted.map((p) => (
+          <HighlightedCard {...p} />
+        ))}
+      </div>
+    </section>
+  )}
 
   <!-- FILTERS + GRID — terminal tint, tiles match -->
   <section id="projects" class="mx-auto max-w-[1120px] px-6 pb-16">
