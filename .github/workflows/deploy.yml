@@ -31,6 +31,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
       - uses: actions/configure-pages@v5 # pin: 983d7736d9b0ae60b43ef2ff8a07a17d73c9c3bf
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3 # pin: 56afc609e7422eca1dfdea629fe52e9a44ba264b
         with:
           path: ./dist
