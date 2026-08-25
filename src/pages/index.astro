@@ -73,7 +73,7 @@ const hiddenCount = totalAll - visible.length;
  | |/\| |/ _ \| _ \/ __|| || |
  |  \/ | (_) |   / (__ | __ |
  |_/\___|\___/|_|\\___||_||_|</pre>
-          <div class="mt-3 font-mono text-xs text-zinc-400">Try <code class="rounded bg-black px-1">⌘K</code> → <code class="rounded bg-black px-1">filter go</code>, <code class="rounded bg-black px-1">goto pi-statusbar</code>, <code class="rounded bg-black px-1">theme amber</code></div>
+          <div class="mt-3 font-mono text-xs text-zinc-400">Try <code class="rounded bg-black px-1">⌘K</code> → <code class="rounded bg-black px-1">filter go</code>, <code class="rounded bg-black px-1">goto pi-statusbar</code> — then <code class="rounded bg-black px-1">/</code> to focus filter</div>
           <div class="mt-2 font-mono text-[11px] text-zinc-500">Press <code class="rounded bg-zinc-800 px-1">/</code> to focus filter · <code class="rounded bg-zinc-800 px-1">Esc</code> to close palette</div>
         </div>
       </div>
@@ -96,18 +96,18 @@ const hiddenCount = totalAll - visible.length;
 
     <div class="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex flex-1 gap-3">
-        <label class="relative flex-1 max-w-[420px]">
-          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-emerald-400">$</span>
-          <input id="q" placeholder="filter … e.g. astro, pino, go" class="w-full rounded border border-zinc-800 bg-black px-7 py-2.5 font-mono text-sm placeholder:text-zinc-600 focus:border-emerald-900 focus:outline-none" />
+        <label class="relative flex-1 max-w-[420px]" aria-label="Filter projects">
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-emerald-400" aria-hidden="true">$</span>
+          <input id="q" aria-label="Filter projects" placeholder="filter … e.g. astro, pino, go" class="w-full rounded border border-zinc-800 bg-black px-7 py-2.5 font-mono text-sm placeholder:text-zinc-600 focus:border-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500" />
         </label>
-        <select id="lang" class="rounded border border-zinc-800 bg-black px-3 py-2.5 font-mono text-xs text-zinc-300 focus:border-emerald-900 focus:outline-none">
+        <select id="lang" aria-label="Filter by language" class="rounded border border-zinc-800 bg-black px-3 py-2.5 font-mono text-xs text-zinc-300 focus:border-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
           <option value="">all lang</option>
           {languages.map((l) => <option value={l}>{l}</option>)}
         </select>
       </div>
-      <div class="flex gap-2 font-mono text-xs">
-        <button data-sort="stars" class="sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black">★ stars</button>
-        <button data-sort="updated" class="sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600">recent</button>
+      <div class="flex gap-2 font-mono text-xs" role="group" aria-label="Sort projects">
+        <button data-sort="stars" aria-pressed="true" type="button" class="sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">★ stars</button>
+        <button data-sort="updated" aria-pressed="false" type="button" class="sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">recent</button>
       </div>
     </div>
 
@@ -118,16 +118,16 @@ const hiddenCount = totalAll - visible.length;
         </div>
       ))}
     </div>
-    <div id="empty" class="hidden mt-10 text-center font-mono text-sm text-zinc-500">no match — try <code class="rounded bg-zinc-900 px-1">clear</code> or <code class="rounded bg-zinc-900 px-1">⌘K</code> → clear filter</div>
+    <div id="empty" class="hidden mt-10 text-center font-mono text-sm text-zinc-500" role="status" aria-live="polite">no match — try <code class="rounded bg-zinc-900 px-1">clear</code> or <code class="rounded bg-zinc-900 px-1">⌘K</code> → clear filter</div>
   </section>
 
   <!-- palette overlay -->
-  <div id="palette" class="fixed inset-0 z-50 hidden">
+  <div id="palette" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="Command palette">
     <div id="backdrop" class="absolute inset-0 bg-black/60 backdrop-blur"></div>
     <div class="relative mx-auto mt-[20vh] w-[min(640px,92vw)] rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl">
       <div class="flex items-center gap-3 border-b border-zinc-800 px-4 py-3">
-        <span class="font-mono text-sm text-emerald-400">$</span>
-        <input id="palette-input" class="flex-1 bg-transparent font-mono text-sm outline-none placeholder:text-zinc-600" placeholder="filter typescript, goto pi-statusbar, clear" autocomplete="off" />
+        <span class="font-mono text-sm text-emerald-400" aria-hidden="true">$</span>
+        <input id="palette-input" aria-label="Command palette" class="flex-1 bg-transparent font-mono text-sm outline-none placeholder:text-zinc-600" placeholder="filter typescript, goto pi-statusbar, clear" autocomplete="off" />
         <span class="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">ESC</span>
       </div>
       <div id="palette-list" class="max-h-[50vh] overflow-auto p-2 font-mono text-sm"></div>
@@ -160,6 +160,7 @@ const hiddenCount = totalAll - visible.length;
       btns.forEach((b) => {
         const active = b.dataset.sort === s;
         b.className = active ? 'sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black' : 'sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600';
+        b.setAttribute('aria-pressed', String(active));
       });
       apply();
     }
@@ -186,8 +187,9 @@ const hiddenCount = totalAll - visible.length;
       list.innerHTML = filtered.map((c) => `<button data-id="${c.id}" class="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-zinc-800"><span>${c.label}</span><span class="ml-4 max-w-[28ch] truncate text-xs text-zinc-500">${c.desc || ''}</span></button>`).join('') || `<div class="px-3 py-6 text-center text-zinc-500">no match for "${q}"</div>`;
       list.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { const c = [...cmds, ...projs].find((x) => x.id === b.dataset.id); if (c) c.run(); }));
     }
-    function open() { palette.classList.remove('hidden'); input.value = ''; renderList(''); input.focus(); }
-    function close() { palette.classList.add('hidden'); }
+    let lastFocus = null;
+    function open() { lastFocus = document.activeElement; palette.classList.remove('hidden'); document.getElementById('projects').inert = true; document.querySelector('header').inert = true; input.value = ''; renderList(''); input.focus(); document.body.style.overflow = 'hidden'; }
+    function close() { palette.classList.add('hidden'); document.getElementById('projects').inert = false; document.querySelector('header').inert = false; document.body.style.overflow = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
     if (openNav) openNav.addEventListener('click', open);
     backdrop.addEventListener('click', close);
     document.addEventListener('keydown', (e) => {

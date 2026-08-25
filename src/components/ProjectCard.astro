@@ -28,9 +28,16 @@ const langColors: Record<string, string> = {
 
 const color = language ? (langColors[language] ?? "#52525b") : null;
 const updatedLabel = new Date(updated).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
-const hasHomepage = Boolean(homepage && homepage.trim() !== "");
-// biome-ignore lint/style/noNonNullAssertion: hasHomepage guarantees non-null homepage
-const homepageLabel = hasHomepage ? new URL(homepage!).hostname.replace(/^www\./, "") : "";
+const isSafeHttp = (u: string) => {
+  try {
+    const p = new URL(u).protocol;
+    return p === "http:" || p === "https:";
+  } catch {
+    return false;
+  }
+};
+const hasHomepage = Boolean(homepage && homepage.trim() !== "" && isSafeHttp(homepage));
+const homepageLabel = hasHomepage ? new URL(homepage as string).hostname.replace(/^www\./, "") : "";
 ---
 
 <div
