@@ -1,0 +1,200 @@
+---
+import Base from "../layouts/Base.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import projects from "../data/projects.json";
+
+// Curated ordering: stars descending, then updated
+const featuredNames = ["ovh-availability-checker", "operator-mono-otf", "market-regime-analysis", "photo-renamer", "pi-statusbar", "cc-analyzer", "colophon", "ai-agents-observability"];
+const featured = projects.filter((p) => featuredNames.includes(p.name)).sort((a, b) => featuredNames.indexOf(a.name) - featuredNames.indexOf(b.name));
+const rest = projects.filter((p) => !featuredNames.includes(p.name));
+const sorted = [...featured, ...rest];
+
+const languages = [...new Set(projects.map((p) => p.language).filter(Boolean))].sort() as string[];
+const totalStars = projects.reduce((s, p) => s + p.stars, 0);
+---
+
+<Base title="Jorge Barnaby — yorch | Principal Software Engineer" description="Principal Software Engineer building AI agents, observability and developer tools. Open source showcase — 49+ public repos.">
+  <!-- NAV -->
+  <header class="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-[#0a0a0b]/70 border-b border-zinc-800/70">
+    <div class="mx-auto max-w-[1120px] px-6 h-[56px] flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-white text-black grid place-items-center font-mono text-[13px] font-bold">yb</div>
+        <span class="font-semibold tracking-tight">yorch</span>
+        <span class="hidden sm:inline text-zinc-500 text-sm">— Jorge Barnaby</span>
+      </a>
+      <nav class="flex items-center gap-5 text-sm">
+        <a href="#projects" class="text-zinc-400 hover:text-white transition">Projects</a>
+        <a href="https://github.com/yorch" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-1.5 font-medium hover:bg-zinc-100 transition">GitHub →</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="mx-auto max-w-[1120px] px-6 pt-14 pb-8 md:pt-20 md:pb-10">
+    <div class="grid md:grid-cols-[1.2fr_0.8fr] gap-10 items-start">
+      <div>
+        <div class="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Principal Software Engineer @ SentinelOne · Miami, FL
+        </div>
+        <h1 class="mt-5 text-[38px] md:text-[48px] font-bold tracking-[-0.03em] leading-none">
+          Building tools<br />
+          <span class="text-zinc-500">for developers & AI agents.</span>
+        </h1>
+        <p class="mt-5 max-w-[60ch] text-[15.5px] leading-7 text-zinc-400">
+          I’m <span class="text-zinc-100 font-medium">Jorge Barnaby (yorch)</span> — 17 years on GitHub, 110 public repos. I ship
+          <span class="text-zinc-200">observability</span>, <span class="text-zinc-200">agent tooling</span> and
+          <span class="text-zinc-200">infrastructure utilities</span> — from OVH server checkers to pi / Claude Code extensions.
+          All open source. Auto-synced from GitHub.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3 text-sm">
+          <a href="https://github.com/yorch" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-white text-black px-5 py-2.5 font-medium hover:bg-zinc-100 transition">View GitHub profile</a>
+          <a href="#projects" class="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-5 py-2.5 text-zinc-300 hover:border-zinc-600 hover:text-white transition">Explore projects</a>
+          <a href="mailto:me@yorch.org" class="inline-flex items-center gap-2 px-3 py-2.5 text-zinc-400 hover:text-white transition">me@yorch.org →</a>
+        </div>
+
+        <div class="mt-8 grid grid-cols-3 gap-6 max-w-[420px] border-t border-zinc-800 pt-6">
+          <div>
+            <div class="text-2xl font-bold tracking-tight">{projects.length}</div>
+            <div class="text-xs text-zinc-500">public repos</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold tracking-tight">{totalStars}</div>
+            <div class="text-xs text-zinc-500">stars earned</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold tracking-tight">{languages.length}</div>
+            <div class="text-xs text-zinc-500">languages</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Highlights -->
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 md:p-6">
+        <div class="text-xs font-mono tracking-widest text-zinc-500 uppercase">Now building</div>
+        <ul class="mt-4 space-y-4">
+          <li class="flex gap-3">
+            <span class="mt-1 w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
+            <div>
+              <div class="text-sm font-medium">pi-statusbar & pi-claude-delegate</div>
+              <div class="text-sm text-zinc-400">Theme-aware status bar + delegate to Claude Code from pi harness.</div>
+              <a href="https://github.com/yorch/pi-statusbar" class="text-xs text-zinc-300 underline decoration-zinc-600 hover:text-white">pi-statusbar →</a>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-1 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+            <div>
+              <div class="text-sm font-medium">ai-agents-observability</div>
+              <div class="text-sm text-zinc-400">Self-hosted observability for AI coding agents.</div>
+              <a href="https://github.com/yorch/ai-agents-observability" class="text-xs text-zinc-300 underline decoration-zinc-600 hover:text-white">observability →</a>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-1 w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
+            <div>
+              <div class="text-sm font-medium">ovh-availability-checker <span class="text-amber-400">★30</span></div>
+              <div class="text-sm text-zinc-400">Most starred — OVH/Kimsufi/SoYouStart stock checker.</div>
+              <a href="https://github.com/yorch/ovh-availability-checker" class="text-xs text-zinc-300 underline decoration-zinc-600 hover:text-white">checker →</a>
+            </div>
+          </li>
+        </ul>
+        <div class="mt-6 rounded-xl bg-black/40 border border-zinc-800 p-3 font-mono text-xs text-zinc-400">
+          <div class="text-zinc-500">updated daily via GitHub API · auto-sorted by ★ + recency</div>
+          <div class="mt-1 flex items-center gap-2">
+            <code class="bg-zinc-800 px-1.5 py-0.5 rounded">npm run generate:projects</code>
+            <span>→</span>
+            <span>src/data/projects.json</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTERS + GRID -->
+  <section id="projects" class="mx-auto max-w-[1120px] px-6 pb-16">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-t border-zinc-800 pt-8">
+      <div>
+        <h2 class="text-xl font-semibold tracking-tight">Open Source</h2>
+        <p class="text-sm text-zinc-500 mt-1">49 public non-fork repos · live from GitHub API · minimal cards, search + language filter.</p>
+      </div>
+      <a href="https://github.com/yorch?tab=repositories" target="_blank" class="text-sm text-zinc-400 hover:text-white">All repos on GitHub →</a>
+    </div>
+
+    <div class="mt-6 flex flex-col lg:flex-row gap-3 lg:items-center justify-between">
+      <div class="flex flex-1 gap-3">
+        <label class="flex-1 max-w-[420px] relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"/></svg>
+          <input id="q" placeholder="Search projects…" class="w-full rounded-full border border-zinc-800 bg-zinc-900 px-9 py-2.5 text-sm placeholder:text-zinc-500 focus:outline-none focus:border-zinc-700" />
+        </label>
+        <select id="lang" class="rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-zinc-300 focus:outline-none focus:border-zinc-700">
+          <option value="">All languages</option>
+          {languages.map((l) => <option value={l}>{l}</option>)}
+        </select>
+      </div>
+      <div class="flex gap-2 text-xs">
+        <button data-sort="stars" class="sort-btn active rounded-full bg-white text-black px-4 py-2 font-medium">★ Stars</button>
+        <button data-sort="updated" class="sort-btn rounded-full border border-zinc-700 text-zinc-300 px-4 py-2 hover:border-zinc-600">Recent</button>
+      </div>
+    </div>
+
+    <div id="grid" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {sorted.map((p) => (
+        <div class="proj" data-name={p.name.toLowerCase()} data-desc={(p.description ?? "").toLowerCase()} data-lang={p.language ?? ""} data-stars={p.stars} data-updated={p.updated}>
+          <ProjectCard {...p} />
+        </div>
+      ))}
+    </div>
+
+    <div id="empty" class="hidden mt-10 text-center text-sm text-zinc-500">No projects match your filter.</div>
+
+    <div class="mt-8 flex flex-wrap gap-2 text-[11px]">
+      <span class="text-zinc-500">Tip:</span>
+      <span class="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-zinc-400">Forks excluded</span>
+      <span class="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-zinc-400">Auto-sorted · rebuild to refresh stars</span>
+      <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/projects.json" class="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-zinc-400 hover:text-white">View JSON →</a>
+    </div>
+  </section>
+
+  <script is:inline>
+    const q = document.getElementById('q');
+    const lang = document.getElementById('lang');
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const btns = document.querySelectorAll('.sort-btn');
+    let sort = 'stars';
+
+    function apply() {
+      const term = q.value.toLowerCase().trim();
+      const lv = lang.value;
+      let visible = [];
+      let hidden = [];
+      for (const el of grid.children) {
+        const name = el.dataset.name || '';
+        const desc = el.dataset.desc || '';
+        const la = el.dataset.lang || '';
+        const hit = (!term || name.includes(term) || desc.includes(term)) && (!lv || la === lv);
+        el.style.display = hit ? '' : 'none';
+        (hit ? visible : hidden).push(el);
+      }
+      empty.style.display = visible.length ? 'none' : '';
+      // sort visible
+      const sorted = [...visible].sort((a,b) => {
+        if (sort === 'stars') return Number(b.dataset.stars) - Number(a.dataset.stars);
+        return new Date(b.dataset.updated) - new Date(a.dataset.updated);
+      });
+      for (const el of sorted) grid.appendChild(el);
+    }
+    function setSort(s) {
+      sort = s;
+      for (const b of btns) {
+        const active = b.dataset.sort === s;
+        b.className = active ? 'sort-btn active rounded-full bg-white text-black px-4 py-2 font-medium' : 'sort-btn rounded-full border border-zinc-700 text-zinc-300 px-4 py-2 hover:border-zinc-600';
+      }
+      apply();
+    }
+    q.addEventListener('input', apply);
+    lang.addEventListener('change', apply);
+    btns.forEach(b => b.addEventListener('click', () => setSort(b.dataset.sort)));
+  </script>
+</Base>

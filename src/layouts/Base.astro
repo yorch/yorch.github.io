@@ -1,0 +1,45 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = "Jorge Barnaby — yorch", description = "Principal Software Engineer — Open source projects, tools and experiments by Jorge Barnaby (yorch)." } = Astro.props;
+const siteUrl = Astro.site?.toString() ?? "https://yorch.github.io";
+---
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Jorge Barnaby" />
+    <link rel="canonical" href={siteUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="bg-[#0a0a0b] text-zinc-100 antialiased selection:bg-white selection:text-black">
+    <div class="min-h-screen flex flex-col">
+      <slot />
+      <footer class="mt-auto border-t border-zinc-800/80">
+        <div class="mx-auto max-w-[1120px] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
+          <span>© {new Date().getFullYear()} Jorge Barnaby — yorch</span>
+          <span class="flex items-center gap-3">
+            <a href="https://github.com/yorch" class="hover:text-zinc-200 transition">GitHub</a>
+            <span class="opacity-30">·</span>
+            <a href="https://github.com/yorch/yorch.github.io" class="hover:text-zinc-200 transition">Source</a>
+          </span>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

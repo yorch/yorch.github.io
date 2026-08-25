@@ -1,0 +1,31 @@
+{
+  "name": "yorch-github-io",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Jorge Barnaby — yorch.github.io portfolio & open source showcase",
+  "author": {
+    "name": "Jorge Barnaby",
+    "email": "me@yorch.org"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync": "astro sync",
+    "generate:projects": "tsx scripts/generate-projects.ts"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.1.13",
+    "alpinejs": "3.15.8",
+    "astro": "5.13.7",
+    "tailwindcss": "4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "npm"
+}

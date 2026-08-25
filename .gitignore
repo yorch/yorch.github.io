@@ -1,0 +1,20 @@
+# Astro
+dist/
+.astro/
+node_modules/
+.env
+
+# Jekyll legacy archived in branch jekyll-legacy
+_site/*
+_theme_packages/*
+_jekyll-legacy/
+
+# OS
+Thumbs.db
+.DS_Store
+*.log
+
+!.gitkeep
+
+.rbenv-version
+.rvmrc
