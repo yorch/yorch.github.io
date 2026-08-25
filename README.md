@@ -9,7 +9,7 @@ Personal site + open source showcase. Built with **Astro 5 + Tailwind 4**, deplo
 ## What’s inside
 
 - **Hero** — 17 years on GitHub, 110 repos, now-building highlights
-- **Open Source showcase** — 49 public non-fork repos, auto-synced from [GitHub API](https://api.github.com/users/yorch/repos) via `src/data/projects.json`, sorted by ★ + recency, searchable + language filter — *minimal dev portfolio* style
+- **Open Source showcase** — 49 public non-fork repos, auto-synced from [GitHub API](https://api.github.com/users/yorch/repos) via `src/data/projects.json`, **curated via `src/data/curation.json`** (featured/hidden/overrides), sorted by ★ + recency, searchable + language filter — *minimal dev portfolio* style
 - **Deploy** — GitHub Actions (`.github/workflows/deploy.yml`) → `dist/` → `gh-pages` (daily cron at 06:00 UTC refreshes stars)
 
 ## Local dev
@@ -28,21 +28,52 @@ src/
   layouts/Base.astro
   components/ProjectCard.astro
   pages/index.astro         # hero + filterable grid (vanilla JS)
-  data/projects.json        # generated, 49 repos, sorted
+  data/projects.json        # generated, 49 repos, sorted (daily)
+  data/curation.json        # curated: featured, hidden, visible, overrides
   styles/global.css         # @tailwindcss/vite
-scripts/generate-projects.ts
+scripts/
+  generate-projects.ts      # fetch GitHub API → projects.json
+  list-curation.ts          # helper: npm run curate:list
 public/favicon.svg
-_jekyll-legacy/             # archive of original Jekyll Bootstrap 0.3.0 site
 ```
 
 Jekyll history is preserved in the [`jekyll-legacy` branch](https://github.com/yorch/yorch.github.io/tree/jekyll-legacy).
 
-## Customizing
+## Curating which repos show
 
-- **Curate featured order:** edit `featuredNames` in `src/pages/index.astro`
+Edit **`src/data/curation.json`** — commit & push, no code change needed:
+
+```json
+{
+  "featured": ["ovh-availability-checker", "pi-statusbar", "cc-analyzer"],
+  "hidden": ["test", "dotfiles", "Mvc3QuizQuestions"],
+  "visible": null,
+  "overrides": { "pi-statusbar": { "description": "Custom blurb" } }
+}
+```
+
+- `featured` — ordered pinned names, appear first in exact order (rest sorted by ★)
+- `hidden` — blocklist (ignored if `visible` is set)
+- `visible` — allowlist: if non-null array, **only** those repos show (overrides `hidden`)
+- `overrides` — per-repo `description` / `homepage` patches (keeps GitHub stars live)
+
+Helpers:
+```bash
+npm run curate:list   # table: name ★ lang  v=visible ★=featured h=hidden
+npm run generate:projects  # refresh stars/desc from GitHub then rebuild
+```
+
+Quick recipes:
+- **Hide a repo:** add its name to `hidden`
+- **Show only 10:** set `visible: ["repo-a", "repo-b", ...]`
+- **Reorder:** reorder `featured` exactly as you want top row
+- **Custom blurb:** add to `overrides.{repo}.description`
+
+## Other customizing
+
 - **Language colors:** edit `langColors` in `src/components/ProjectCard.astro`
-- **Add a project manually:** add to `src/data/projects.json` or pin via `featuredNames` + re-sort
-- **Daily auto-update:** workflow `schedule: 0 6 * * *` handles it; force via *Run workflow* in Actions
+- **Hero copy:** edit `src/pages/index.astro`
+- **Daily auto-update:** workflow `schedule: 0 6 * * *` handles stars; force via *Run workflow* in Actions
 
 ## License
 

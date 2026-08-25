@@ -1,16 +1,39 @@
 ---
 import Base from "../layouts/Base.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import projects from "../data/projects.json";
+import projectsRaw from "../data/projects.json";
+import curation from "../data/curation.json";
 
-// Curated ordering: stars descending, then updated
-const featuredNames = ["ovh-availability-checker", "operator-mono-otf", "market-regime-analysis", "photo-renamer", "pi-statusbar", "cc-analyzer", "colophon", "ai-agents-observability"];
-const featured = projects.filter((p) => featuredNames.includes(p.name)).sort((a, b) => featuredNames.indexOf(a.name) - featuredNames.indexOf(b.name));
-const rest = projects.filter((p) => !featuredNames.includes(p.name));
+// --- Curation logic ---
+// - visible: if array, allowlist; else hidden blocklist
+// - featured: ordered pinned ids (must be in visible)
+// - overrides: per-repo description/homepage patches
+type Override = { description?: string; homepage?: string | null };
+const overrides = (curation.overrides ?? {}) as Record<string, Override>;
+const applyOverrides = (p: typeof projectsRaw[number]) => {
+  const o = overrides[p.name];
+  return o ? { ...p, description: o.description ?? p.description, homepage: o.homepage ?? p.homepage } : p;
+};
+
+const hiddenSet = new Set((curation.hidden ?? []) as string[]);
+const visibleRaw = Array.isArray((curation as any).visible) && (curation as any).visible.length > 0
+  ? projectsRaw.filter((p) => ((curation as any).visible as string[]).includes(p.name))
+  : projectsRaw.filter((p) => !hiddenSet.has(p.name));
+
+const visible = visibleRaw.map(applyOverrides);
+const featuredNames = (curation.featured ?? []) as string[];
+const featuredSet = new Set(featuredNames);
+const featured = featuredNames.map((n) => visible.find((p) => p.name === n)).filter(Boolean) as typeof visible;
+const featuredExisting = new Set(featured.map((p) => p.name));
+const rest = visible.filter((p) => !featuredExisting.has(p.name)).sort((a, b) => b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime());
+// warn about curation typos (dev only) - missing featured ids
+const missingFeatured = featuredNames.filter((n) => !visibleRaw.some((p) => p.name === n));
 const sorted = [...featured, ...rest];
 
-const languages = [...new Set(projects.map((p) => p.language).filter(Boolean))].sort() as string[];
-const totalStars = projects.reduce((s, p) => s + p.stars, 0);
+const languages = [...new Set(visible.map((p) => p.language).filter(Boolean))].sort() as string[];
+const totalStars = visible.reduce((s, p) => s + p.stars, 0);
+const totalAll = projectsRaw.length;
+const hiddenCount = totalAll - visible.length;
 ---
 
 <Base title="Jorge Barnaby — yorch | Principal Software Engineer" description="Principal Software Engineer building AI agents, observability and developer tools. Open source showcase — 49+ public repos.">
@@ -56,8 +79,8 @@ const totalStars = projects.reduce((s, p) => s + p.stars, 0);
 
         <div class="mt-8 grid grid-cols-3 gap-6 max-w-[420px] border-t border-zinc-800 pt-6">
           <div>
-            <div class="text-2xl font-bold tracking-tight">{projects.length}</div>
-            <div class="text-xs text-zinc-500">public repos</div>
+            <div class="text-2xl font-bold tracking-tight">{visible.length}</div>
+            <div class="text-xs text-zinc-500">shown{hiddenCount ? ` · ${hiddenCount} hidden` : ""}</div>
           </div>
           <div>
             <div class="text-2xl font-bold tracking-tight">{totalStars}</div>
@@ -68,6 +91,7 @@ const totalStars = projects.reduce((s, p) => s + p.stars, 0);
             <div class="text-xs text-zinc-500">languages</div>
           </div>
         </div>
+        <p class="mt-3 text-[11px] text-zinc-500">Curated via <code class="bg-zinc-900 px-1 py-0.5 rounded">src/data/curation.json</code> → <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/curation.json" class="underline decoration-zinc-700 hover:text-zinc-300">edit</a> · {totalAll} total public repos</p>
       </div>
 
       <!-- Highlights -->
@@ -111,12 +135,21 @@ const totalStars = projects.reduce((s, p) => s + p.stars, 0);
     </div>
   </section>
 
+  <!-- CURATION WARNING (dev) -->
+  {missingFeatured.length > 0 && (
+    <div class="mx-auto max-w-[1120px] px-6">
+      <div class="mb-4 rounded-lg border border-amber-900/50 bg-amber-950/30 px-4 py-2 text-xs text-amber-200">
+        Curation warning: featured ids not found in GitHub data (typo or hidden): <code>{missingFeatured.join(", ")}</code>
+      </div>
+    </div>
+  )}
+
   <!-- FILTERS + GRID -->
   <section id="projects" class="mx-auto max-w-[1120px] px-6 pb-16">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-t border-zinc-800 pt-8">
       <div>
         <h2 class="text-xl font-semibold tracking-tight">Open Source</h2>
-        <p class="text-sm text-zinc-500 mt-1">49 public non-fork repos · live from GitHub API · minimal cards, search + language filter.</p>
+        <p class="text-sm text-zinc-500 mt-1">{visible.length} shown of {totalAll} public repos · live from GitHub API · <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/curation.json" class="underline decoration-zinc-700 hover:text-zinc-300">curated via curation.json</a> · search + language filter.</p>
       </div>
       <a href="https://github.com/yorch?tab=repositories" target="_blank" class="text-sm text-zinc-400 hover:text-white">All repos on GitHub →</a>
     </div>

@@ -14,7 +14,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "sync": "astro sync",
-    "generate:projects": "tsx scripts/generate-projects.ts"
+    "generate:projects": "tsx scripts/generate-projects.ts",
+    "curate:list": "tsx scripts/list-curation.ts",
+    "curate:check": "tsx scripts/list-curation.ts | tail -n 30"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.1.13",
