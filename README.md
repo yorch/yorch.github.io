@@ -4,7 +4,7 @@
 
 Personal site + open source showcase. Built with **Astro 5 + Tailwind 4**, deployed to GitHub Pages.
 
-**Live:** https://yorch.github.io
+**Live:** <https://yorch.github.io>
 
 ## What’s inside
 
@@ -58,12 +58,14 @@ Edit **`src/data/curation.json`** — commit & push, no code change needed:
 - `overrides` — per-repo `description` / `homepage` patches (keeps GitHub stars live)
 
 Helpers:
+
 ```bash
 npm run curate:list   # table: name ★ lang  v=visible ★=featured h=hidden
 npm run generate:projects  # refresh stars/desc from GitHub then rebuild
 ```
 
 Quick recipes:
+
 - **Hide a repo:** add its name to `hidden`
 - **Show only 10:** set `visible: ["repo-a", "repo-b", ...]`
 - **Reorder:** reorder `featured` exactly as you want top row
