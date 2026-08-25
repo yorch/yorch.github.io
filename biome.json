@@ -1,10 +1,10 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
   "assist": {
     "actions": {
       "source": {
         "organizeImports": "on",
-        "useSortedAttributes": "on",
+        "useSortedAttributes": "off",
         "useSortedKeys": "on",
         "useSortedProperties": "on"
       }
@@ -52,7 +52,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "overrides": [

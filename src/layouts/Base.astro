@@ -12,23 +12,23 @@ const { title = "Jorge Barnaby — yorch", description = "Principal Software Eng
 const siteUrl = Astro.site?.toString() ?? "https://yorch.github.io";
 ---
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html class="scroll-smooth" lang="en" >
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta name="author" content="Jorge Barnaby" />
-    <link rel="canonical" href={siteUrl} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={siteUrl} />
-    <meta name="twitter:card" content="summary" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta content={description} name="description" />
+    <meta content="Jorge Barnaby" name="author" />
+    <link href={siteUrl} rel="canonical" />
+    <meta content={title} property="og:title" />
+    <meta content={description} property="og:description" />
+    <meta content="website" property="og:type" />
+    <meta content={siteUrl} property="og:url" />
+    <meta content="summary" name="twitter:card" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
   </head>
   <body class="bg-[#0a0a0b] text-zinc-100 antialiased selection:bg-white selection:text-black">
     <div class="min-h-screen flex flex-col">
@@ -37,9 +37,9 @@ const siteUrl = Astro.site?.toString() ?? "https://yorch.github.io";
         <div class="mx-auto max-w-[1120px] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
           <span>© {new Date().getFullYear()} Jorge Barnaby — yorch</span>
           <span class="flex items-center gap-3">
-            <a href="https://github.com/yorch" class="hover:text-zinc-200 transition">GitHub</a>
+            <a class="hover:text-zinc-200 transition" href="https://github.com/yorch" >GitHub</a>
             <span class="opacity-30">·</span>
-            <a href="https://github.com/yorch/yorch.github.io" class="hover:text-zinc-200 transition">Source</a>
+            <a class="hover:text-zinc-200 transition" href="https://github.com/yorch/yorch.github.io" >Source</a>
           </span>
         </div>
       </footer>

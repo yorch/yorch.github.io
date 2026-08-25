@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="8" fill="white"/>
-  <text x="50%" y="54%" dominant-baseline="central" text-anchor="middle" font-family="monospace" font-weight="700" font-size="14" fill="black">yb</text>
+<svg aria-label="yorch" height="32" role="img" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg" >
+  <title>yb</title>
+  <rect fill="white" height="32" rx="8" width="32" />
+  <text dominant-baseline="central" fill="black" font-family="monospace" font-size="14" font-weight="700" text-anchor="middle" x="50%" y="54%" >yb</text>
 </svg>

@@ -31,7 +31,7 @@ async function fetchAll() {
       (a, b) => b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime()
     );
 
-  await writeFile(OUT, JSON.stringify(filtered, null, 2) + '\n', 'utf-8');
+  await writeFile(OUT, `${JSON.stringify(filtered, null, 2)}\n`, 'utf-8');
   console.log(`Wrote ${filtered.length} repos to ${OUT}`);
 }
 

@@ -22,7 +22,7 @@ const rows = (projects as any[]).map((p) => ({
 console.log(
   `\nTotal: ${projects.length}  |  Visible: ${rows.filter((r) => r.visible).length}  |  Hidden: ${rows.filter((r) => !r.visible).length}  |  Featured: ${featured.size}\n`
 );
-console.log('NAME'.padEnd(32) + '★'.padStart(3) + '  LANG'.padEnd(10) + '  V F H');
+console.log(`${'NAME'.padEnd(32) + '★'.padStart(3) + '  LANG'.padEnd(10)}  V F H`);
 console.log('-'.repeat(60));
 for (const r of rows.sort((a, b) => b.stars - a.stars)) {
   const v = r.visible ? 'v' : ' ';
