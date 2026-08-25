@@ -31,15 +31,16 @@
     "node-print-request",
     "react-graphql-example",
     "dancestudio-import",
-    "openai-api-playground"
+    "openai-api-playground",
+    "bash-tools"
   ],
   "visible": null,
   "overrides": {
     "pi-statusbar": {
-      "description": "Theme-aware status bar for the pi coding agent — segments, presets, git status, context bar."
+      "description": "Theme-aware status bar for the pi coding agent \u2014 segments, presets, git status, context bar."
     },
     "colophon": {
-      "description": "Backstage catalog as MCP tools — Markdown docs rendered for humans, exposed for agents."
+      "description": "Backstage catalog as MCP tools \u2014 Markdown docs rendered for humans, exposed for agents."
     }
   }
 }
