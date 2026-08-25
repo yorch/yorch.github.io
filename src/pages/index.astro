@@ -1,234 +1,202 @@
 ---
-
-import ProjectCard from "../components/ProjectCard.astro";
-import curation from "../data/curation.json";
-import projectsRaw from "../data/projects.json";
 import Base from "../layouts/Base.astro";
-
-// --- Curation logic ---
-// - visible: if array, allowlist; else hidden blocklist
-// - featured: ordered pinned ids (must be in visible)
-// - overrides: per-repo description/homepage patches
-type Override = { description?: string; homepage?: string | null };
-const overrides = (curation.overrides ?? {}) as Record<string, Override>;
-const applyOverrides = (p: typeof projectsRaw[number]) => {
-  const o = overrides[p.name];
-  return o ? { ...p, description: o.description ?? p.description, homepage: o.homepage ?? p.homepage } : p;
-};
+import ProjectCard from "../components/ProjectCard.astro";
+import projectsRaw from "../data/projects.json";
+import curation from "../data/curation.json";
 
 const hiddenSet = new Set((curation.hidden ?? []) as string[]);
 const visibleRaw = Array.isArray((curation as any).visible) && (curation as any).visible.length > 0
   ? projectsRaw.filter((p) => ((curation as any).visible as string[]).includes(p.name))
   : projectsRaw.filter((p) => !hiddenSet.has(p.name));
-
-const visible = visibleRaw.map(applyOverrides);
+const overrides = (curation.overrides ?? {}) as Record<string, { description?: string; homepage?: string | null }>;
+const visible = visibleRaw.map((p) => {
+  const o = overrides[p.name];
+  return o ? { ...p, description: o.description ?? p.description, homepage: o.homepage ?? p.homepage } : p;
+});
 const featuredNames = (curation.featured ?? []) as string[];
-const featuredSet = new Set(featuredNames);
 const featured = featuredNames.map((n) => visible.find((p) => p.name === n)).filter(Boolean) as typeof visible;
-const featuredExisting = new Set(featured.map((p) => p.name));
-const rest = visible.filter((p) => !featuredExisting.has(p.name)).sort((a, b) => b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime());
-// warn about curation typos (dev only) - missing featured ids
-const missingFeatured = featuredNames.filter((n) => !visibleRaw.some((p) => p.name === n));
+const rest = visible.filter((p) => !new Set(featured.map((f) => f.name)).has(p.name)).sort((a, b) => b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime());
 const sorted = [...featured, ...rest];
-
 const languages = [...new Set(visible.map((p) => p.language).filter(Boolean))].sort() as string[];
 const totalStars = visible.reduce((s, p) => s + p.stars, 0);
 const totalAll = projectsRaw.length;
 const hiddenCount = totalAll - visible.length;
 ---
 
-<Base title="Jorge Barnaby — yorch | Principal Software Engineer" description="Principal Software Engineer building AI agents, observability and developer tools. Open source showcase — 49+ public repos.">
-  <!-- NAV -->
-  <header class="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-[#0a0a0b]/70 border-b border-zinc-800/70">
-    <div class="mx-auto max-w-[1120px] px-6 h-[56px] flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-white text-black grid place-items-center font-mono text-[13px] font-bold">yb</div>
-        <span class="font-semibold tracking-tight">yorch</span>
-        <span class="hidden sm:inline text-zinc-500 text-sm">— Jorge Barnaby</span>
+<Base title="yorch@web — Jorge Barnaby" description="Principal Software Engineer — terminal portfolio, open source showcase, 31 curated projects.">
+  <!-- NAV — terminal prompt style -->
+  <header class="sticky top-0 z-30 border-b border-zinc-800/70 bg-[#0a0a0b]/80 backdrop-blur">
+    <div class="mx-auto flex h-[56px] max-w-[1120px] items-center justify-between px-6">
+      <a href="/" class="flex items-center gap-3 font-mono text-sm">
+        <span class="text-emerald-400">yorch@web:~$</span>
+        <span class="hidden text-zinc-500 md:inline">— Jorge Barnaby</span>
+        <span class="ml-2 hidden rounded bg-zinc-900 px-2 py-0.5 text-xs text-zinc-400 md:inline">31 shown</span>
       </a>
-      <nav class="flex items-center gap-5 text-sm">
-        <a href="#projects" class="text-zinc-400 hover:text-white transition">Projects</a>
-        <a href="https://github.com/yorch" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-1.5 font-medium hover:bg-zinc-100 transition">GitHub →</a>
+      <nav class="flex items-center gap-3 font-mono text-xs">
+        <a href="#projects" class="hidden text-zinc-400 hover:text-white md:inline">ls projects/</a>
+        <button id="open-palette-nav" class="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-zinc-300 hover:border-zinc-700 hover:text-white">
+          <span class="text-zinc-500">$</span> ⌘K
+        </button>
+        <a href="https://github.com/yorch" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-3 py-1.5 font-medium text-black hover:bg-emerald-400">GitHub →</a>
       </nav>
     </div>
   </header>
 
-  <!-- HERO -->
-  <section class="mx-auto max-w-[1120px] px-6 pt-14 pb-8 md:pt-20 md:pb-10">
-    <div class="grid md:grid-cols-[1.2fr_0.8fr] gap-10 items-start">
-      <div>
-        <div class="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-400">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Principal Software Engineer @ SentinelOne · Miami, FL
-        </div>
-        <h1 class="mt-5 text-[38px] md:text-[48px] font-bold tracking-[-0.03em] leading-none">
-          Building tools<br />
-          <span class="text-zinc-500">for developers & AI agents.</span>
-        </h1>
-        <p class="mt-5 max-w-[60ch] text-[15.5px] leading-7 text-zinc-400">
-          I’m <span class="text-zinc-100 font-medium">Jorge Barnaby (yorch)</span> — 17 years on GitHub, 110 public repos. I ship
-          <span class="text-zinc-200">observability</span>, <span class="text-zinc-200">agent tooling</span> and
-          <span class="text-zinc-200">infrastructure utilities</span> — from OVH server checkers to pi / Claude Code extensions.
-          All open source. Auto-synced from GitHub.
-        </p>
-
-        <div class="mt-6 flex flex-wrap gap-3 text-sm">
-          <a href="https://github.com/yorch" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-white text-black px-5 py-2.5 font-medium hover:bg-zinc-100 transition">View GitHub profile</a>
-          <a href="#projects" class="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-5 py-2.5 text-zinc-300 hover:border-zinc-600 hover:text-white transition">Explore projects</a>
-          <a href="mailto:me@yorch.org" class="inline-flex items-center gap-2 px-3 py-2.5 text-zinc-400 hover:text-white transition">me@yorch.org →</a>
-        </div>
-
-        <div class="mt-8 grid grid-cols-3 gap-6 max-w-[420px] border-t border-zinc-800 pt-6">
-          <div>
-            <div class="text-2xl font-bold tracking-tight">{visible.length}</div>
-            <div class="text-xs text-zinc-500">shown{hiddenCount ? ` · ${hiddenCount} hidden` : ""}</div>
-          </div>
-          <div>
-            <div class="text-2xl font-bold tracking-tight">{totalStars}</div>
-            <div class="text-xs text-zinc-500">stars earned</div>
-          </div>
-          <div>
-            <div class="text-2xl font-bold tracking-tight">{languages.length}</div>
-            <div class="text-xs text-zinc-500">languages</div>
-          </div>
-        </div>
-        <p class="mt-3 text-[11px] text-zinc-500">Curated via <code class="bg-zinc-900 px-1 py-0.5 rounded">src/data/curation.json</code> → <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/curation.json" class="underline decoration-zinc-700 hover:text-zinc-300">edit</a> · {totalAll} total public repos</p>
+  <!-- TERMINAL HERO — neofetch + stats -->
+  <section class="mx-auto max-w-[1120px] px-6 py-6">
+    <div class="rounded-xl border border-emerald-900/30 bg-black p-4 font-mono text-[12.5px] leading-5 shadow-xl md:p-6">
+      <div class="flex items-center gap-2 border-b border-zinc-800 pb-3 text-xs">
+        <span class="h-3 w-3 rounded-full bg-red-500"></span><span class="h-3 w-3 rounded-full bg-yellow-500"></span><span class="h-3 w-3 rounded-full bg-green-500"></span>
+        <span class="ml-2 text-zinc-500">yorch@web:~/open-source — zsh — {visible.length} curated</span>
+        <span class="ml-auto hidden items-center gap-2 text-zinc-600 md:flex"><span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span> {totalStars} ★ · {languages.length} langs</span>
       </div>
-
-      <!-- Highlights -->
-      <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 md:p-6">
-        <div class="text-xs font-mono tracking-widest text-zinc-500 uppercase">Now building</div>
-        <ul class="mt-4 space-y-4">
-          <li class="flex gap-3">
-            <span class="mt-1 w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
-            <div>
-              <div class="text-sm font-medium">pi-statusbar & pi-claude-delegate</div>
-              <div class="text-sm text-zinc-400">Theme-aware status bar + delegate to Claude Code from pi harness.</div>
-              <a href="https://github.com/yorch/pi-statusbar" class="text-xs text-zinc-300 underline decoration-zinc-600 hover:text-white">pi-statusbar →</a>
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-1 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-            <div>
-              <div class="text-sm font-medium">ai-agents-observability</div>
-              <div class="text-sm text-zinc-400">Self-hosted observability for AI coding agents.</div>
-              <a href="https://github.com/yorch/ai-agents-observability" class="text-xs text-zinc-300 underline decoration-zinc-600 hover:text-white">observability →</a>
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-1 w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
-            <div>
-              <div class="text-sm font-medium">ovh-availability-checker <span class="text-amber-400">★30</span></div>
-              <div class="text-sm text-zinc-400">Most starred — OVH/Kimsufi/SoYouStart stock checker.</div>
-              <a href="https://github.com/yorch/ovh-availability-checker" class="text-xs text-zinc-300 underline decoration-zinc-600 hover:text-white">checker →</a>
-            </div>
-          </li>
-        </ul>
-        <div class="mt-6 rounded-xl bg-black/40 border border-zinc-800 p-3 font-mono text-xs text-zinc-400">
-          <div class="text-zinc-500">updated daily via GitHub API · auto-sorted by ★ + recency</div>
-          <div class="mt-1 flex items-center gap-2">
-            <code class="bg-zinc-800 px-1.5 py-0.5 rounded">npm run generate:projects</code>
-            <span>→</span>
-            <span>src/data/projects.json</span>
+      <div class="mt-4 grid gap-6 md:grid-cols-[1.25fr_0.75fr]">
+        <div>
+          <div class="text-emerald-400">yorch@web:~/open-source$ neofetch</div>
+          <div class="mt-3 grid grid-cols-[110px_1fr] gap-x-4 gap-y-1 text-zinc-300">
+            <span class="text-zinc-500">user</span><span>Jorge Barnaby (yorch)</span>
+            <span class="text-zinc-500">role</span><span>Principal SWE @ SentinelOne</span>
+            <span class="text-zinc-500">location</span><span>Miami, FL</span>
+            <span class="text-zinc-500">projects</span><span>{visible.length} curated / {totalAll} total · {hiddenCount} hidden</span>
+            <span class="text-zinc-500">stars</span><span>{totalStars} ★</span>
+            <span class="text-zinc-500">shell</span><span>zsh · <code class="rounded bg-zinc-900 px-1">⌘K</code> palette</span>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2 text-xs">
+            <a href="#projects" class="rounded-full bg-emerald-500 px-3 py-1.5 font-medium text-black hover:bg-emerald-400">ls projects/ ↓</a>
+            <a href="https://github.com/yorch" target="_blank" class="rounded-full border border-zinc-700 px-3 py-1.5 text-zinc-300 hover:border-zinc-600 hover:text-white">github.com/yorch →</a>
+            <span class="hidden items-center gap-2 rounded-full border border-zinc-800 px-3 py-1.5 text-zinc-500 md:inline-flex">curated via curation.json</span>
           </div>
         </div>
+        <div class="rounded-lg bg-zinc-900/30 p-3">
+          <div class="font-mono text-[11px] tracking-widest text-zinc-500">yorch — ascii</div>
+          <pre class="mt-2 text-[10px] leading-3 text-emerald-400">  _  _  ___  ___  ___  _  _
+ | |/\| |/ _ \| _ \/ __|| || |
+ |  \/ | (_) |   / (__ | __ |
+ |_/\___|\___/|_|\\___||_||_|</pre>
+          <div class="mt-3 font-mono text-xs text-zinc-400">Try <code class="rounded bg-black px-1">⌘K</code> → <code class="rounded bg-black px-1">filter go</code>, <code class="rounded bg-black px-1">goto pi-statusbar</code>, <code class="rounded bg-black px-1">theme amber</code></div>
+          <div class="mt-2 font-mono text-[11px] text-zinc-500">Press <code class="rounded bg-zinc-800 px-1">/</code> to focus filter · <code class="rounded bg-zinc-800 px-1">Esc</code> to close palette</div>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center gap-3 border-t border-zinc-800 pt-3 font-mono text-xs">
+        <span class="text-emerald-400">$</span><span class="text-zinc-300">ls projects/ | head — {featured.length} featured</span>
+        <span class="ml-auto hidden text-zinc-600 md:inline">tiles match terminal — hover for emerald</span>
       </div>
     </div>
   </section>
 
-  <!-- CURATION WARNING (dev) -->
-  {missingFeatured.length > 0 && (
-    <div class="mx-auto max-w-[1120px] px-6">
-      <div class="mb-4 rounded-lg border border-amber-900/50 bg-amber-950/30 px-4 py-2 text-xs text-amber-200">
-        Curation warning: featured ids not found in GitHub data (typo or hidden): <code>{missingFeatured.join(", ")}</code>
-      </div>
-    </div>
-  )}
-
-  <!-- FILTERS + GRID -->
+  <!-- FILTERS + GRID — terminal tint, tiles match -->
   <section id="projects" class="mx-auto max-w-[1120px] px-6 pb-16">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-t border-zinc-800 pt-8">
+    <div class="flex flex-col gap-4 border-t border-zinc-800 pt-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h2 class="text-xl font-semibold tracking-tight">Open Source</h2>
-        <p class="text-sm text-zinc-500 mt-1">{visible.length} shown of {totalAll} public repos · live from GitHub API · <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/curation.json" class="underline decoration-zinc-700 hover:text-zinc-300">curated via curation.json</a> · search + language filter.</p>
+        <h2 class="font-mono text-sm tracking-widest text-emerald-400">~/open-source$ ls</h2>
+        <p class="mt-1 font-mono text-xs text-zinc-500">{visible.length} shown of {totalAll} · curated via <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/curation.json" class="underline decoration-zinc-700 hover:text-zinc-300">curation.json</a> · <code class="rounded bg-zinc-900 px-1">⌘K</code> to jump</p>
       </div>
-      <a href="https://github.com/yorch?tab=repositories" target="_blank" class="text-sm text-zinc-400 hover:text-white">All repos on GitHub →</a>
+      <a href="https://github.com/yorch?tab=repositories" target="_blank" class="font-mono text-xs text-zinc-500 hover:text-zinc-300">→ github.com/yorch</a>
     </div>
 
-    <div class="mt-6 flex flex-col lg:flex-row gap-3 lg:items-center justify-between">
+    <div class="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex flex-1 gap-3">
-        <label class="flex-1 max-w-[420px] relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"/></svg>
-          <input id="q" placeholder="Search projects…" class="w-full rounded-full border border-zinc-800 bg-zinc-900 px-9 py-2.5 text-sm placeholder:text-zinc-500 focus:outline-none focus:border-zinc-700" />
+        <label class="relative flex-1 max-w-[420px]">
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-emerald-400">$</span>
+          <input id="q" placeholder="filter … e.g. astro, pino, go" class="w-full rounded border border-zinc-800 bg-black px-7 py-2.5 font-mono text-sm placeholder:text-zinc-600 focus:border-emerald-900 focus:outline-none" />
         </label>
-        <select id="lang" class="rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-zinc-300 focus:outline-none focus:border-zinc-700">
-          <option value="">All languages</option>
+        <select id="lang" class="rounded border border-zinc-800 bg-black px-3 py-2.5 font-mono text-xs text-zinc-300 focus:border-emerald-900 focus:outline-none">
+          <option value="">all lang</option>
           {languages.map((l) => <option value={l}>{l}</option>)}
         </select>
       </div>
-      <div class="flex gap-2 text-xs">
-        <button data-sort="stars" class="sort-btn active rounded-full bg-white text-black px-4 py-2 font-medium">★ Stars</button>
-        <button data-sort="updated" class="sort-btn rounded-full border border-zinc-700 text-zinc-300 px-4 py-2 hover:border-zinc-600">Recent</button>
+      <div class="flex gap-2 font-mono text-xs">
+        <button data-sort="stars" class="sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black">★ stars</button>
+        <button data-sort="updated" class="sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600">recent</button>
       </div>
     </div>
 
-    <div id="grid" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div id="grid" class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {sorted.map((p) => (
         <div class="proj" data-name={p.name.toLowerCase()} data-desc={(p.description ?? "").toLowerCase()} data-lang={p.language ?? ""} data-stars={p.stars} data-updated={p.updated}>
           <ProjectCard {...p} />
         </div>
       ))}
     </div>
-
-    <div id="empty" class="hidden mt-10 text-center text-sm text-zinc-500">No projects match your filter.</div>
-
-    <div class="mt-8 flex flex-wrap gap-2 text-[11px]">
-      <span class="text-zinc-500">Tip:</span>
-      <span class="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-zinc-400">Forks excluded</span>
-      <span class="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-zinc-400">Auto-sorted · rebuild to refresh stars</span>
-      <a href="https://github.com/yorch/yorch.github.io/blob/master/src/data/projects.json" class="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-zinc-400 hover:text-white">View JSON →</a>
-    </div>
+    <div id="empty" class="hidden mt-10 text-center font-mono text-sm text-zinc-500">no match — try <code class="rounded bg-zinc-900 px-1">clear</code> or <code class="rounded bg-zinc-900 px-1">⌘K</code> → clear filter</div>
   </section>
 
-  <script is:inline>
+  <!-- palette overlay -->
+  <div id="palette" class="fixed inset-0 z-50 hidden">
+    <div id="backdrop" class="absolute inset-0 bg-black/60 backdrop-blur"></div>
+    <div class="relative mx-auto mt-[20vh] w-[min(640px,92vw)] rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl">
+      <div class="flex items-center gap-3 border-b border-zinc-800 px-4 py-3">
+        <span class="font-mono text-sm text-emerald-400">$</span>
+        <input id="palette-input" class="flex-1 bg-transparent font-mono text-sm outline-none placeholder:text-zinc-600" placeholder="filter typescript, goto pi-statusbar, clear" autocomplete="off" />
+        <span class="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">ESC</span>
+      </div>
+      <div id="palette-list" class="max-h-[50vh] overflow-auto p-2 font-mono text-sm"></div>
+      <div class="border-t border-zinc-800 px-3 py-2 font-mono text-[11px] text-zinc-500">Tip: <code class="rounded bg-zinc-800 px-1">filter go</code> · <code class="rounded bg-zinc-800 px-1">goto &lt;name&gt;</code> · <code class="rounded bg-zinc-800 px-1">clear</code></div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ visible }}>
     const q = document.getElementById('q');
     const lang = document.getElementById('lang');
     const grid = document.getElementById('grid');
     const empty = document.getElementById('empty');
     const btns = document.querySelectorAll('.sort-btn');
     let sort = 'stars';
-
     function apply() {
       const term = q.value.toLowerCase().trim();
       const lv = lang.value;
-      let visible = [];
-      let hidden = [];
+      let vis = [];
       for (const el of grid.children) {
-        const name = el.dataset.name || '';
-        const desc = el.dataset.desc || '';
-        const la = el.dataset.lang || '';
-        const hit = (!term || name.includes(term) || desc.includes(term)) && (!lv || la === lv);
+        const hit = (!term || el.dataset.name.includes(term) || el.dataset.desc.includes(term)) && (!lv || el.dataset.lang === lv);
         el.style.display = hit ? '' : 'none';
-        (hit ? visible : hidden).push(el);
+        if (hit) vis.push(el);
       }
-      empty.style.display = visible.length ? 'none' : '';
-      // sort visible
-      const sorted = [...visible].sort((a,b) => {
-        if (sort === 'stars') return Number(b.dataset.stars) - Number(a.dataset.stars);
-        return new Date(b.dataset.updated) - new Date(a.dataset.updated);
-      });
+      empty.style.display = vis.length ? 'none' : '';
+      const sorted = [...vis].sort((a, b) => sort === 'stars' ? Number(b.dataset.stars) - Number(a.dataset.stars) : new Date(b.dataset.updated) - new Date(a.dataset.updated));
       for (const el of sorted) grid.appendChild(el);
     }
     function setSort(s) {
       sort = s;
-      for (const b of btns) {
+      btns.forEach((b) => {
         const active = b.dataset.sort === s;
-        b.className = active ? 'sort-btn active rounded-full bg-white text-black px-4 py-2 font-medium' : 'sort-btn rounded-full border border-zinc-700 text-zinc-300 px-4 py-2 hover:border-zinc-600';
-      }
+        b.className = active ? 'sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black' : 'sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600';
+      });
       apply();
     }
     q.addEventListener('input', apply);
     lang.addEventListener('change', apply);
-    btns.forEach(b => b.addEventListener('click', () => setSort(b.dataset.sort)));
+    btns.forEach((b) => { b.addEventListener('click', () => setSort(b.dataset.sort)); });
+
+    // palette
+    const palette = document.getElementById('palette');
+    const backdrop = document.getElementById('backdrop');
+    const input = document.getElementById('palette-input');
+    const list = document.getElementById('palette-list');
+    const openNav = document.getElementById('open-palette-nav');
+    function renderList(q) {
+      const term = (q || '').toLowerCase().trim();
+      const cmds = [
+        { id: 'filter:ts', label: 'filter: typescript', desc: 'Show TypeScript', run: () => { q.value = ''; lang.value = 'TypeScript'; apply(); close(); } },
+        { id: 'filter:go', label: 'filter: go', desc: 'Show Go', run: () => { q.value = ''; lang.value = 'Go'; apply(); close(); } },
+        { id: 'clear', label: 'clear filter', desc: 'Show all', run: () => { q.value = ''; lang.value = ''; apply(); close(); } },
+      ];
+      const projs = visible.filter((p) => !term || p.name.toLowerCase().includes(term) || (p.description || '').toLowerCase().includes(term) || term.startsWith('filter') || term.startsWith('goto')).slice(0, 8).map((p) => ({ id: `goto:${p.name}`, label: `goto ${p.name}`, desc: p.description || '', run: () => { q.value = p.name; lang.value=''; apply(); const el = [...grid.children].find((e) => e.dataset.name === p.name.toLowerCase()); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.querySelector('div').classList.add('ring','ring-emerald-500'); setTimeout(() => el.querySelector('div').classList.remove('ring','ring-emerald-500'), 1200); } close(); } }));
+      const pool = [...cmds, ...projs];
+      const filtered = pool.filter((c) => !term || c.label.toLowerCase().includes(term) || term.split(' ').some((w) => c.label.includes(w)));
+      list.innerHTML = filtered.map((c) => `<button data-id="${c.id}" class="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-zinc-800"><span>${c.label}</span><span class="ml-4 max-w-[28ch] truncate text-xs text-zinc-500">${c.desc || ''}</span></button>`).join('') || `<div class="px-3 py-6 text-center text-zinc-500">no match for "${q}"</div>`;
+      list.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { const c = [...cmds, ...projs].find((x) => x.id === b.dataset.id); if (c) c.run(); }));
+    }
+    function open() { palette.classList.remove('hidden'); input.value = ''; renderList(''); input.focus(); }
+    function close() { palette.classList.add('hidden'); }
+    if (openNav) openNav.addEventListener('click', open);
+    backdrop.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.classList.contains('hidden') ? open() : close(); }
+      if (e.key === 'Escape' && !palette.classList.contains('hidden')) close();
+      if (e.key === '/' && document.activeElement === document.body && palette.classList.contains('hidden')) { e.preventDefault(); document.getElementById('q').focus(); }
+    });
+    input.addEventListener('input', () => renderList(input.value));
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const first = list.querySelector('button'); if (first) first.click(); } });
+    renderList('');
   </script>
 </Base>
