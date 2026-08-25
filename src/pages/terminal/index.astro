@@ -1,0 +1,65 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="Terminal Exploration — yorch.github.io"
+  description="Three terminal UX prototypes for yorch.github.io: full shell, hybrid chrome, and command palette. Review and pick a direction."
+>
+  <div class="mx-auto max-w-[1120px] px-6 py-10">
+    <div class="mb-8">
+      <div class="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 font-mono text-xs text-zinc-400">
+        <span class="h-2 w-2 rounded-full bg-amber-500"></span> feat/terminal-exploration — PR preview
+      </div>
+      <h1 class="mt-4 font-mono text-[28px] font-bold tracking-tight md:text-[36px]">
+        terminal <span class="text-zinc-500">— exploration</span>
+      </h1>
+      <p class="mt-3 max-w-[70ch] text-[15px] leading-6 text-zinc-400">
+        Three directions for a terminal-like <code class="rounded bg-zinc-900 px-1 py-0.5">yorch.github.io</code>. All keep the curated showcase (31 shown / 18 hidden via
+        <code class="rounded bg-zinc-900 px-1 py-0.5">curation.json</code>) and live GitHub data. Click through, try the interactions, then tell me which vibe to polish for <code class="rounded bg-zinc-900 px-1 py-0.5">/</code>.
+      </p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <a href="/terminal/full" class="group rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-zinc-700 hover:bg-zinc-900">
+        <div class="font-mono text-xs tracking-widest text-amber-400">01 — FULL SHELL</div>
+        <div class="mt-2 text-lg font-semibold">Interactive prompt</div>
+        <div class="mt-2 text-sm leading-5 text-zinc-400">
+          Type <code class="rounded bg-black px-1">help</code>, <code class="rounded bg-black px-1">ls</code>, <code class="rounded bg-black px-1">cat pi-statusbar</code>. Single-page, no grid — content lives in the terminal buffer.
+        </div>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-black group-hover:bg-zinc-100">Open →</div>
+        <div class="mt-4 font-mono text-[11px] text-zinc-500">SEO: low (JS-only) · a11y: needs aria-live</div>
+      </a>
+
+      <a href="/terminal/hybrid" class="group rounded-2xl border border-emerald-900/50 bg-emerald-950/20 p-6 hover:border-emerald-800 hover:bg-emerald-950/30">
+        <div class="font-mono text-xs tracking-widest text-emerald-400">02 — HYBRID ★ RECOMMENDED</div>
+        <div class="mt-2 text-lg font-semibold">Terminal chrome + grid</div>
+        <div class="mt-2 text-sm leading-5 text-zinc-400">
+          Prompt header with <code class="rounded bg-black px-1">neofetch</code>-style stats + your searchable grid below. Best SEO/a11y trade-off.
+        </div>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-3 py-1.5 text-xs font-medium text-black group-hover:bg-emerald-400">Open →</div>
+        <div class="mt-4 font-mono text-[11px] text-zinc-500">SEO: high (static grid) · a11y: good</div>
+      </a>
+
+      <a href="/terminal/palette" class="group rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-zinc-700 hover:bg-zinc-900">
+        <div class="font-mono text-xs tracking-widest text-violet-400">03 — PALETTE</div>
+        <div class="mt-2 text-lg font-semibold">Cmd+K command palette</div>
+        <div class="mt-2 text-sm leading-5 text-zinc-400">
+          Keep current minimal UI, add <code class="rounded bg-black px-1">⌘K</code> palette: <code class="rounded bg-black px-1">filter js</code>, <code class="rounded bg-black px-1">theme amber</code>.
+        </div>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-black group-hover:bg-zinc-100">Open →</div>
+        <div class="mt-4 font-mono text-[11px] text-zinc-500">SEO: high · a11y: excellent</div>
+      </a>
+    </div>
+
+    <div class="mt-10 rounded-xl border border-zinc-800 bg-black/40 p-4 font-mono text-xs leading-5 text-zinc-400">
+      <div class="text-zinc-500">How to review</div>
+      <ul class="mt-2 list-disc pl-5">
+        <li>Open each → try typing / filtering / <code class="rounded bg-zinc-800 px-1">Cmd+K</code>.</li>
+        <li>Check mobile: full shell is tight, hybrid is responsive.</li>
+        <li>Tell me: <em>palette</em> (green/amber/nord), prompt (`yorch@web:~$` vs `yorch@pi:~$`), ASCII block?</li>
+      </ul>
+      <div class="mt-3">Current live is still <a href="/" class="underline decoration-zinc-700 hover:text-white">/</a> (minimal). Nothing merges until you approve this PR.</div>
+    </div>
+  </div>
+</Base>

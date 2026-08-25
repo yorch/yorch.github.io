@@ -1,0 +1,114 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import projectsRaw from "../../data/projects.json";
+import curation from "../../data/curation.json";
+
+const hiddenSet = new Set((curation.hidden ?? []) as string[]);
+const visibleRaw = Array.isArray((curation as any).visible) && (curation as any).visible.length > 0
+  ? projectsRaw.filter((p) => ((curation as any).visible as string[]).includes(p.name))
+  : projectsRaw.filter((p) => !hiddenSet.has(p.name));
+const overrides = (curation.overrides ?? {}) as Record<string, {description?: string; homepage?: string | null}>;
+const visible = visibleRaw.map(p=> {
+  const o = overrides[p.name];
+  return o ? { ...p, description: o.description ?? p.description, homepage: o.homepage ?? p.homepage } : p;
+});
+const featuredNames = (curation.featured ?? []) as string[];
+const featured = featuredNames.map(n=> visible.find(p=> p.name===n)).filter(Boolean) as typeof visible;
+const rest = visible.filter(p=> !new Set(featured.map(f=>f.name)).has(p.name)).sort((a,b)=> b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime());
+const sorted = [...featured, ...rest];
+const languages = [...new Set(visible.map(p=> p.language).filter(Boolean))].sort() as string[];
+const totalStars = visible.reduce((s,p)=> s+p.stars, 0);
+---
+
+<Base title="yorch@web — hybrid terminal" description="Hybrid terminal chrome + searchable grid for yorch.github.io">
+  <div class="mx-auto max-w-[1120px] px-6 py-6">
+    <div class="mb-4 flex items-center justify-between font-mono text-xs text-zinc-500">
+      <a href="/terminal" class="underline decoration-zinc-700 hover:text-zinc-300">← exploration</a>
+      <span class="hidden md:inline">hybrid — terminal header + static grid (SEO + a11y preserved)</span>
+    </div>
+
+    <!-- terminal header -->
+    <div class="rounded-xl border border-emerald-900/50 bg-black p-4 font-mono text-[12.5px] leading-5 shadow-xl md:p-6">
+      <div class="flex items-center gap-2 border-b border-zinc-800 pb-3 text-xs">
+        <span class="h-3 w-3 rounded-full bg-red-500"></span><span class="h-3 w-3 rounded-full bg-yellow-500"></span><span class="h-3 w-3 rounded-full bg-green-500"></span>
+        <span class="ml-2 text-zinc-500">yorch@web:~/open-source — zsh</span>
+        <span class="ml-auto hidden items-center gap-2 text-zinc-600 md:flex"> <span class="h-2 w-2 rounded-full bg-emerald-500"></span> 31 shown · 18 hidden</span>
+      </div>
+      <div class="mt-4 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
+        <div>
+          <div class="text-emerald-400">yorch@web:~/open-source$ neofetch</div>
+          <div class="mt-3 grid grid-cols-[110px_1fr] gap-x-4 gap-y-1 text-zinc-300">
+            <span class="text-zinc-500">user</span><span>Jorge Barnaby (yorch)</span>
+            <span class="text-zinc-500">role</span><span>Principal SWE @ SentinelOne</span>
+            <span class="text-zinc-500">location</span><span>Miami, FL</span>
+            <span class="text-zinc-500">projects</span><span>{visible.length} curated / {projectsRaw.length} total</span>
+            <span class="text-zinc-500">stars</span><span>{totalStars} ★</span>
+            <span class="text-zinc-500">languages</span><span>{languages.join(", ")}</span>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2 text-xs">
+            <span class="rounded bg-zinc-900 px-2 py-1">featured: {featured.length}</span>
+            <span class="rounded bg-zinc-900 px-2 py-1">hidden: {visibleRaw.length !== projectsRaw.length ? `${projectsRaw.length - visibleRaw.length}` : "0"}</span>
+            <span class="rounded bg-zinc-900 px-2 py-1">updated: daily cron</span>
+          </div>
+        </div>
+        <div class="rounded-lg bg-zinc-900/40 p-3 text-zinc-400">
+          <div class="text-xs tracking-widest text-zinc-500">ASCII</div>
+          <pre class="mt-2 text-[10px] leading-3 text-emerald-400">  _  _  ___  ___  ___  _  _
+ | |/\| |/ _ \| _ \/ __|| || |
+ |  \/ | (_) |   / (__ | __ |
+ |_/\___|\___/|_|\\___||_||_|</pre>
+          <div class="mt-3 text-xs">Try <code class="rounded bg-black px-1">⌘K</code> on palette prototype, or filter below — grid stays searchable.</div>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-3 border-t border-zinc-800 pt-3 text-xs">
+        <span class="text-zinc-500">$</span> <span class="text-zinc-300">ls projects/ | head</span>
+        <span class="ml-auto text-zinc-600">press <a href="#projects" class="underline">↓ to grid</a></span>
+      </div>
+    </div>
+
+    <!-- reuse existing grid but with terminal tint -->
+    <section id="projects" class="mt-8">
+      <div class="flex flex-col gap-4 border-t border-zinc-800 pt-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 class="font-mono text-sm tracking-widest text-emerald-400">~/open-source$ ls</h2>
+          <p class="mt-1 text-sm text-zinc-500">{visible.length} shown of {projectsRaw.length} · curated via <code class="rounded bg-zinc-900 px-1">curation.json</code> · also try <a href="/terminal/palette" class="underline">palette</a></p>
+        </div>
+        <a href="https://github.com/yorch?tab=repositories" target="_blank" class="font-mono text-xs text-zinc-500 hover:text-zinc-300">→ github.com/yorch</a>
+      </div>
+
+      <div class="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-1 gap-3">
+          <label class="flex-1 max-w-[420px] relative">
+            <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-emerald-400">$</span>
+            <input id="q" placeholder="filter … e.g. astro" class="w-full rounded border border-zinc-800 bg-black px-7 py-2.5 font-mono text-sm placeholder:text-zinc-600 focus:border-emerald-900 focus:outline-none" />
+          </label>
+          <select id="lang" class="rounded border border-zinc-800 bg-black px-3 py-2.5 font-mono text-xs text-zinc-300 focus:border-emerald-900 focus:outline-none">
+            <option value="">all lang</option>
+            {languages.map((l)=> <option value={l}>{l}</option>)}
+          </select>
+        </div>
+        <div class="flex gap-2 font-mono text-xs">
+          <button data-sort="stars" class="sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black">★ stars</button>
+          <button data-sort="updated" class="sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600">recent</button>
+        </div>
+      </div>
+
+      <div id="grid" class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {sorted.map((p)=> (
+          <div class="proj" data-name={p.name.toLowerCase()} data-desc={(p.description??"").toLowerCase()} data-lang={p.language??""} data-stars={p.stars} data-updated={p.updated}>
+            <ProjectCard {...p} />
+          </div>
+        ))}
+      </div>
+      <div id="empty" class="hidden mt-10 text-center font-mono text-sm text-zinc-500">no match — try <code class="rounded bg-zinc-900 px-1">clear</code></div>
+    </section>
+  </div>
+
+  <script is:inline>
+    const q=document.getElementById('q'); const lang=document.getElementById('lang'); const grid=document.getElementById('grid'); const empty=document.getElementById('empty'); const btns=document.querySelectorAll('.sort-btn'); let sort='stars';
+    function apply(){ const term=q.value.toLowerCase().trim(); const lv=lang.value; let vis=[]; for(const el of grid.children){ const hit= (!term|| el.dataset.name.includes(term) || el.dataset.desc.includes(term)) && (!lv|| el.dataset.lang===lv); el.style.display= hit? '':'none'; if(hit) vis.push(el); } empty.style.display= vis.length? 'none':''; const sorted=[...vis].sort((a,b)=> sort==='stars'? Number(b.dataset.stars)-Number(a.dataset.stars): new Date(b.dataset.updated)-new Date(a.dataset.updated)); for(const el of sorted) grid.appendChild(el);}
+    function setSort(s){ sort=s; btns.forEach(b=>{ const active=b.dataset.sort===s; b.className= active? 'sort-btn active rounded bg-emerald-500 px-3 py-2 font-medium text-black' : 'sort-btn rounded border border-zinc-700 px-3 py-2 text-zinc-400 hover:border-zinc-600';}); apply();}
+    q.addEventListener('input', apply); lang.addEventListener('change', apply); btns.forEach(b=> b.addEventListener('click', ()=> setSort(b.dataset.sort)));
+  </script>
+</Base>

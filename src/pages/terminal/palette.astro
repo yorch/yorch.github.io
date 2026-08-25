@@ -1,0 +1,116 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import projectsRaw from "../../data/projects.json";
+import curation from "../../data/curation.json";
+
+const hiddenSet = new Set((curation.hidden ?? []) as string[]);
+const visibleRaw = Array.isArray((curation as any).visible) && (curation as any).visible.length > 0
+  ? projectsRaw.filter((p) => ((curation as any).visible as string[]).includes(p.name))
+  : projectsRaw.filter((p) => !hiddenSet.has(p.name));
+const overrides = (curation.overrides ?? {}) as Record<string, {description?: string; homepage?: string | null}>;
+const visible = visibleRaw.map(p=> {
+  const o = overrides[p.name];
+  return o ? { ...p, description: o.description ?? p.description, homepage: o.homepage ?? p.homepage } : p;
+});
+const featuredNames = (curation.featured ?? []) as string[];
+const featured = featuredNames.map(n=> visible.find(p=> p.name===n)).filter(Boolean) as typeof visible;
+const rest = visible.filter(p=> !new Set(featured.map(f=>f.name)).has(p.name)).sort((a,b)=> b.stars - a.stars || new Date(b.updated).getTime() - new Date(a.updated).getTime());
+const sorted = [...featured, ...rest];
+const languages = [...new Set(visible.map(p=> p.language).filter(Boolean))].sort() as string[];
+---
+
+<Base title="yorch — palette" description="Command palette prototype for yorch.github.io">
+  <div class="mx-auto max-w-[1120px] px-6 py-6">
+    <div class="mb-4 flex items-center justify-between font-mono text-xs text-zinc-500">
+      <a href="/terminal" class="underline decoration-zinc-700 hover:text-zinc-300">← exploration</a>
+      <span>palette — press <code class="rounded bg-zinc-900 px-1.5 py-0.5">⌘K</code> or <code class="rounded bg-zinc-900 px-1.5 py-0.5">Ctrl+K</code></span>
+    </div>
+
+    <div class="rounded-xl border border-violet-900/50 bg-violet-950/20 p-4">
+      <div class="font-mono text-xs tracking-widest text-violet-400">COMMAND PALETTE</div>
+      <div class="mt-2 text-sm text-zinc-300">Keep the minimal grid you love, add a terminal overlay. No new page, just a faster way to <code class="rounded bg-black px-1">filter</code>, <code class="rounded bg-black px-1">theme</code>, <code class="rounded bg-black px-1">goto</code>.</div>
+      <div class="mt-3 flex gap-2">
+        <button id="open-palette" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-100">Open palette (⌘K)</button>
+        <a href="/" class="rounded-full border border-zinc-700 px-4 py-2 text-sm text-zinc-300 hover:border-zinc-600 hover:text-white">Back to minimal /</a>
+      </div>
+    </div>
+
+    <section id="projects" class="mt-8">
+      <div id="grid" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {sorted.map((p)=> (
+          <div class="proj" data-name={p.name.toLowerCase()} data-desc={(p.description??"").toLowerCase()} data-lang={p.language??""} data-stars={p.stars} data-updated={p.updated}>
+            <ProjectCard {...p} />
+          </div>
+        ))}
+      </div>
+      <div id="empty" class="hidden mt-8 text-center font-mono text-sm text-zinc-500">no match</div>
+    </section>
+  </div>
+
+  <!-- palette overlay -->
+  <div id="palette" class="fixed inset-0 z-50 hidden">
+    <div id="backdrop" class="absolute inset-0 bg-black/60 backdrop-blur"></div>
+    <div class="relative mx-auto mt-[20vh] w-[min(640px,92vw)] rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl">
+      <div class="flex items-center gap-3 border-b border-zinc-800 px-4 py-3">
+        <span class="font-mono text-sm text-violet-400">$</span>
+        <input id="palette-input" class="flex-1 bg-transparent font-mono text-sm outline-none placeholder:text-zinc-600" placeholder="try: filter typescript, theme amber, goto pi-statusbar" autocomplete="off" />
+        <span class="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">ESC</span>
+      </div>
+      <div id="palette-list" class="max-h-[50vh] overflow-auto p-2 font-mono text-sm"></div>
+      <div class="border-t border-zinc-800 px-3 py-2 font-mono text-[11px] text-zinc-500">Tip: <code class="rounded bg-zinc-800 px-1">filter go</code> · <code class="rounded bg-zinc-800 px-1">theme zinc</code> · <code class="rounded bg-zinc-800 px-1">goto &lt;name&gt;</code></div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ visible, languages }}>
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const palette = document.getElementById('palette');
+    const backdrop = document.getElementById('backdrop');
+    const input = document.getElementById('palette-input');
+    const list = document.getElementById('palette-list');
+    const openBtn = document.getElementById('open-palette');
+
+    function applyFilter(term, lang){
+      const t = (term||'').toLowerCase().trim();
+      const lv = lang||'';
+      let vis=[];
+      for(const el of grid.children){
+        const hit = (!t || el.dataset.name.includes(t) || el.dataset.desc.includes(t)) && (!lv || el.dataset.lang===lv);
+        el.style.display = hit? '':'none';
+        if(hit) vis.push(el);
+      }
+      empty.style.display = vis.length? 'none':'';
+    }
+
+    function renderList(q){
+      const term = (q||'').toLowerCase().trim();
+      const cmds = [
+        { id:'filter:js', label:'filter: typescript', desc:'Show TypeScript only', run:()=>{ applyFilter('','TypeScript'); close(); }},
+        { id:'filter:go', label:'filter: go', desc:'Show Go only', run:()=>{ applyFilter('','Go'); close(); }},
+        { id:'theme:green', label:'theme: green', desc:'Emerald terminal (close palette)', run:()=>{ document.documentElement.style.setProperty('--tw',''); close(); }},
+        { id:'clear', label:'clear filter', desc:'Show all', run:()=>{ applyFilter('',''); close(); }},
+      ];
+      const projs = visible.filter(p=> !term || p.name.toLowerCase().includes(term) || (p.description||'').toLowerCase().includes(term) || term.startsWith('filter') || term.startsWith('goto')).slice(0,8).map(p=> ({ id:`goto:${p.name}`, label:`goto ${p.name}`, desc: p.description||'', run:()=>{ applyFilter(p.name,''); const el=[...grid.children].find(e=> e.dataset.name===p.name.toLowerCase()); if(el){ el.scrollIntoView({behavior:'smooth', block:'center'}); el.querySelector('div').classList.add('ring','ring-violet-500'); setTimeout(()=> el.querySelector('div').classList.remove('ring','ring-violet-500'),1200);} close(); }}));
+      const filtered = [...cmds, ...projs].filter(c=> !term || c.label.toLowerCase().includes(term) || term.split(' ').some(w=> c.label.includes(w)));
+      list.innerHTML = filtered.map(c=> `<button data-id="${c.id}" class="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-zinc-800"><span>${c.label}</span><span class="ml-4 max-w-[28ch] truncate text-xs text-zinc-500">${c.desc||''}</span></button>`).join('') || `<div class="px-3 py-6 text-center text-zinc-500">no match for "${q}"</div>`;
+      list.querySelectorAll('button').forEach(b=> b.addEventListener('click', ()=>{ const c=[...cmds,...projs].find(x=> x.id===b.dataset.id); if(c) c.run(); }));
+    }
+
+    function open(){ palette.classList.remove('hidden'); input.value=''; renderList(''); input.focus(); }
+    function close(){ palette.classList.add('hidden'); }
+
+    openBtn.addEventListener('click', open);
+    backdrop.addEventListener('click', close);
+    document.addEventListener('keydown', (e)=>{
+      if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); palette.classList.contains('hidden')? open(): close(); }
+      if(e.key==='Escape' && !palette.classList.contains('hidden')) close();
+      if(e.key==='/' && document.activeElement===document.body && palette.classList.contains('hidden')){ e.preventDefault(); open(); }
+    });
+    input.addEventListener('input', ()=> renderList(input.value));
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ const first=list.querySelector('button'); if(first) first.click(); }});
+
+    // initial
+    renderList('');
+  </script>
+</Base>
