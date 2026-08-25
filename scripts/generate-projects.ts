@@ -5,15 +5,26 @@ const USER = 'yorch';
 const OUT = 'src/data/projects.json';
 
 async function fetchAll() {
-  const res = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100`, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-      ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
-    },
-  });
-  if (!res.ok) throw new Error(`GitHub API ${res.status} ${await res.text()}`);
-  // biome-ignore lint/suspicious/noExplicitAny: GitHub API shape is dynamic
-  const repos = (await res.json()) as any[];
+  let url: string | null = `https://api.github.com/users/${USER}/repos?per_page=100`;
+  const all: any[] = [];
+  while (url) {
+    const res = await fetch(url, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        ...(process.env.GITHUB_TOKEN
+          ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+          : {}),
+      },
+    });
+    if (!res.ok) throw new Error(`GitHub API ${res.status} ${await res.text()}`);
+    // biome-ignore lint/suspicious/noExplicitAny: GitHub API shape is dynamic
+    const page = (await res.json()) as any[];
+    all.push(...page);
+    const link = res.headers.get('link');
+    const next = link?.match(/<([^>]+)>;\s*rel="next"/)?.[1] ?? null;
+    url = next;
+  }
+  const repos = all;
   const filtered = repos
     .filter((r) => !r.private && !r.fork)
     .map((r) => ({
