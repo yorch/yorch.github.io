@@ -26,7 +26,12 @@
     "html-chess-board",
     "ms-arcade-wakanda-forever",
     "soccer-analyzer",
-    "spree-canadian-tax"
+    "spree-canadian-tax",
+    "balena-autossh",
+    "node-print-request",
+    "react-graphql-example",
+    "dancestudio-import",
+    "openai-api-playground"
   ],
   "visible": null,
   "overrides": {
