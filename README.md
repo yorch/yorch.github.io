@@ -15,10 +15,12 @@ Personal site + open source showcase. Built with **Astro 5 + Tailwind 4**, deplo
 ## Local dev
 
 ```bash
-npm ci
-npm run generate:projects   # fetches GitHub API → src/data/projects.json (needs GITHUB_TOKEN for higher rate limit)
-npm run dev                 # http://localhost:4321
-npm run build && npm run preview
+bun install
+bun run generate:projects   # fetches GitHub API → src/data/projects.json (needs GITHUB_TOKEN for higher rate limit)
+bun run dev                 # http://localhost:4321
+bun run build && bun run preview
+bun run lint                # Biome check
+bun run lint:fix            # Biome auto-fix
 ```
 
 ## Structure
@@ -33,8 +35,11 @@ src/
   styles/global.css         # @tailwindcss/vite
 scripts/
   generate-projects.ts      # fetch GitHub API → projects.json
-  list-curation.ts          # helper: npm run curate:list
+  list-curation.ts          # helper: bun run curate:list
 public/favicon.svg
+biome.json                  # Biome formatter/linter
+bun.lock                    # Bun lockfile
+.node-version               # Node 26
 ```
 
 ## Curating which repos show
@@ -58,8 +63,9 @@ Edit **`src/data/curation.json`** — commit & push, no code change needed:
 Helpers:
 
 ```bash
-npm run curate:list   # table: name ★ lang  v=visible ★=featured h=hidden
-npm run generate:projects  # refresh stars/desc from GitHub then rebuild
+bun run curate:list   # table: name ★ lang  v=visible ★=featured h=hidden
+bun run generate:projects  # refresh stars/desc from GitHub then rebuild
+bun run lint:fix      # format + lint
 ```
 
 Quick recipes:

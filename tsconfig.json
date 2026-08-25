@@ -1,12 +1,12 @@
 {
-  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "strict": true,
     "baseUrl": ".",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
     "types": ["node"]
-  }
+  },
+  "extends": "astro/tsconfigs/strict"
 }

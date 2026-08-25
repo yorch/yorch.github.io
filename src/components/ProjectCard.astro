@@ -1,4 +1,7 @@
 ---
+
+
+
 interface Props {
   name: string;
   description: string | null;
@@ -13,19 +16,20 @@ interface Props {
 const { name, description, stars, forks, language, topics, updated, url, homepage } = Astro.props;
 
 const langColors: Record<string, string> = {
-  TypeScript: "#3178c6",
+  Astro: "#ff5a03",
+  Go: "#00ADD8",
+  Java: "#b07219",
   JavaScript: "#f1e05a",
   Python: "#3572A5",
-  Go: "#00ADD8",
-  Shell: "#89e051",
-  Astro: "#ff5a03",
   Ruby: "#701516",
-  Java: "#b07219",
+  Shell: "#89e051",
+  TypeScript: "#3178c6",
 };
 
 const color = language ? (langColors[language] ?? "#52525b") : null;
-const updatedLabel = new Date(updated).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+const updatedLabel = new Date(updated).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
 const hasHomepage = Boolean(homepage && homepage.trim() !== "");
+// biome-ignore lint/style/noNonNullAssertion: hasHomepage guarantees non-null homepage
 const homepageLabel = hasHomepage ? new URL(homepage!).hostname.replace(/^www\./, "") : "";
 ---
 
@@ -72,6 +76,7 @@ const homepageLabel = hasHomepage ? new URL(homepage!).hostname.replace(/^www\./
       </a>
     </div>
     {hasHomepage && (
+      // biome-ignore lint/style/noNonNullAssertion: hasHomepage guarantees non-null homepage
       <a href={homepage!} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 self-start rounded-full border border-zinc-700/50 bg-zinc-800/50 hover:bg-zinc-800 hover:border-zinc-600 px-2.5 py-1 text-[11px] font-medium text-zinc-300 hover:text-white transition">
         <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13z"/><path d="M1.5 8h13M8 1.5c1.2 2 1.2 11 0 13M8 1.5c-1.2 2-1.2 11 0 13"/></svg>
         <span class="max-w-[14ch] truncate">{homepageLabel}</span>
