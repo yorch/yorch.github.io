@@ -240,7 +240,7 @@
   },
   {
     "name": "dataset-logger",
-    "description": "DataSet NodeJS Logger",
+    "description": "DataSet (Scalyr) Node.js logger — structured events, batch upload & Pino support",
     "stars": 1,
     "forks": 0,
     "language": "TypeScript",
@@ -251,7 +251,7 @@
   },
   {
     "name": "pino-dataset-transport",
-    "description": null,
+    "description": "Pino transport for DataSet (Scalyr) — streams Pino logs to DataSet with batching",
     "stars": 1,
     "forks": 0,
     "language": "TypeScript",
