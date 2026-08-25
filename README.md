@@ -37,7 +37,7 @@ scripts/
 public/favicon.svg
 ```
 
-Jekyll history is preserved in the [`jekyll-legacy` branch](https://github.com/yorch/yorch.github.io/tree/jekyll-legacy).
+Jekyll history is preserved in [`yorch/yorch.github.io-legacy`](https://github.com/yorch/yorch.github.io-legacy) (`master` + `jekyll-legacy` branch).
 
 ## Curating which repos show
 
@@ -79,4 +79,4 @@ Quick recipes:
 
 ## License
 
-MIT — original Jekyll Bootstrap also MIT.
+MIT — see [LICENSE](./LICENSE). The original Jekyll Bootstrap framework is also MIT; legacy Jekyll site archived in `yorch.github.io-legacy` is preserved as-is.
