@@ -37,8 +37,6 @@ scripts/
 public/favicon.svg
 ```
 
-Jekyll history is preserved in [`yorch/yorch.github.io-legacy`](https://github.com/yorch/yorch.github.io-legacy) (`master` + `jekyll-legacy` branch).
-
 ## Curating which repos show
 
 Edit **`src/data/curation.json`** — commit & push, no code change needed:
@@ -79,4 +77,4 @@ Quick recipes:
 
 ## License
 
-MIT — see [LICENSE](./LICENSE). The original Jekyll Bootstrap framework is also MIT; legacy Jekyll site archived in `yorch.github.io-legacy` is preserved as-is.
+MIT — see [LICENSE](./LICENSE).
