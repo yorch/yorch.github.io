@@ -14,11 +14,7 @@
     "bilinear",
     "road-trip-trivia-game"
   ],
-  "highlighted": [
-    "ovh-availability-checker",
-    "pi-statusbar",
-    "cc-analyzer"
-  ],
+  "highlighted": ["bilinear", "ai-agents-observability", "pi-harness-delegate"],
   "hidden": [
     "test",
     "dotfiles",
